@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>¿Salimos el domingo? 🌹</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 40%, #1a0a2e 100%);
+      font-family: 'Lato', sans-serif;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── estrellas ── */
+    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.2; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.5); }
+    }
+
+    /* ── corazones flotantes ── */
+    .heart-float {
+      position: fixed;
+      bottom: -60px;
+      font-size: 1.6rem;
+      animation: floatUp var(--dur) linear infinite;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+    }
+
+    /* ── tarjeta ── */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 28px;
+      padding: 48px 44px 40px;
+      max-width: 480px;
+      width: 92vw;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+      animation: cardIn 0.9s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: scale(0.7) translateY(40px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0); }
+    }
+
+    .rose {
+      font-size: 3.6rem;
+      display: block;
+      margin-bottom: 12px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      color: #fff;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    h1 em { color: #f9a8d4; font-style: italic; }
+
+    .date-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #be185d, #9333ea);
+      color: #fff;
+      font-size: clamp(0.7rem, 3vw, 0.85rem);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 999px;
+      margin: 18px 0 20px;
+    }
+
+    p {
+      color: rgba(255,255,255,0.75);
+      font-size: clamp(0.9rem, 4vw, 1rem);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    p strong { color: #f9a8d4; font-weight: 400; font-style: italic; }
+
+    /* ── botones ── */
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      width: 100%;
+      max-width: 260px;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 999px;
+      font-size: clamp(0.95rem, 4vw, 1rem);
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.3s, font-size 0.3s, padding 0.3s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: scale(0.96) !important; }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+      color: #fff;
+      box-shadow: 0 6px 30px rgba(236,72,153,0.45);
+    }
+    .btn-yes:hover { transform: scale(1.04); box-shadow: 0 10px 40px rgba(236,72,153,0.6); }
+
+    .btn-no {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-no:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── pantalla de ¡Sí! ── */
+    #yesScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    #yesScreen .big {
+      font-size: clamp(3rem, 12vw, 4rem);
+      animation: bounce 0.6s ease infinite alternate;
+    }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-14px); } }
+    #yesScreen h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+      color: #fff;
+      line-height: 1.4;
+    }
+    #yesScreen p { margin-bottom: 0; }
+
+    /* confeti */
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      top: -12px;
+      animation: confettiFall var(--cd) linear forwards;
+      pointer-events: none;
+      z-index: 20;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg)   translateX(0); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg) translateX(var(--cx)); opacity: 0; }
+    }
+
+    /* móvil pequeño */
+    @media (max-width: 380px) {
+      .card { padding: 36px 24px 32px; border-radius: 20px; }
+      .rose { font-size: 2.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="hearts"></div>
+
+<div class="card">
+
+  <!-- vista principal -->
+  <div id="askView">
+    <span class="rose">🌹</span>
+    <h1>Oye, <em>Wuaucini</em>,<br>¿salimos el</h1>
+    <span class="date-badge">Domingo 31 de mayo</span>
+    <p>
+      Di que sí por favor por favor,<br>
+      por favooooooor<br>
+      <strong>Te amo mi niña hermosa</strong>
+    </p>
+    <div class="buttons">
+      <button class="btn btn-yes" id="yesBtn">¡Claro que sí! 💖</button>
+      <button class="btn btn-no"  id="noBtn">Mmm… no sé</button>
+    </div>
+  </div>
+
+  <!-- vista de éxito -->
+  <div id="yesScreen">
+    <span class="big">🎉</span>
+    <h2>¡Sabía que dirías que sí!</h2>
+    <p>Paso por ti<br><strong>1:00 PM</strong><br>Te amo mucho Wau 🥰</p>
+  </div>
+
+</div>
+
+<script>
+  /* ── estrellas ── */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;
+      width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;`;
+    starsEl.appendChild(s);
+  }
+
+  /* ── corazones flotantes ── */
+  const heartsEl = document.getElementById('hearts');
+  ['❤️','🩷','💜','🤍','✨','💕','🌸'].forEach((e, i) => {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = e;
+    h.style.cssText = `left:${Math.random()*100}%;--dur:${7+Math.random()*8}s;animation-delay:${Math.random()*10}s;`;
+    heartsEl.appendChild(h);
+  });
+
+  /* ── botón No ── */
+  const noBtn = document.getElementById('noBtn');
+  const isTouch = () => window.matchMedia('(pointer: coarse)').matches;
+
+  /* desktop: huye del cursor */
+  noBtn.addEventListener('mouseover', () => {
+    if (isTouch()) return;
+    escape();
+  });
+
+  /* móvil: se encoge con cada toque hasta desaparecer */
+  let tapCount = 0;
+  const tapLabels = ['Mmm… no sé','No tengo ganas…','Puede ser…','¡Dijiste que sí! 😏'];
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    tapCount++;
+    const scale = Math.max(0, 1 - tapCount * 0.22);
+    noBtn.style.transform = `scale(${scale})`;
+    noBtn.style.opacity = String(Math.max(0, 1 - tapCount * 0.25));
+    if (tapCount < tapLabels.length) noBtn.textContent = tapLabels[tapCount];
+    if (tapCount >= 4) noBtn.style.pointerEvents = 'none';
+  }, { passive: false });
+
+  let escapedTimes = 0;
+  function escape() {
+    escapedTimes++;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const rect = noBtn.getBoundingClientRect();
+    let nx, ny, tries = 0;
+    do {
+      nx = Math.random() * (vw - rect.width);
+      ny = Math.random() * (vh - rect.height);
+      tries++;
+    } while (tries < 20 && Math.abs(nx - rect.left) < 140 && Math.abs(ny - rect.top) < 90);
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = nx + 'px';
+    noBtn.style.top  = ny + 'px';
+    noBtn.style.zIndex = '50';
+    if (escapedTimes >= 3) noBtn.textContent = '¡Dijiste que sí! 😏';
+    if (escapedTimes >= 5) noBtn.style.opacity = '0';
+  }
+
+  /* ── botón Sí ── */
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    document.getElementById('askView').style.display = 'none';
+    const ys = document.getElementById('yesScreen');
+    ys.style.display = 'flex';
+    noBtn.style.display = 'none';
+    launchConfetti();
+  });
+
+  /* ── confeti ── */
+  function launchConfetti() {
+    const colors = ['#f472b6','#a78bfa','#34d399','#fbbf24','#60a5fa','#fb7185'];
+    for (let i = 0; i < 120; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `
+        left:${Math.random()*100}vw;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        --cd:${1.2+Math.random()*2.4}s;
+        --cx:${(Math.random()-0.5)*200}px;
+        animation-delay:${Math.random()*0.8}s;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+      `;
+      document.body.appendChild(c);
+      c.addEventListener('animationend', () => c.remove());
+    }
+  }
+</script>
+</body>
+</html>
