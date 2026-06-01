@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Nuestra historia 💜</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100svh;
+      background: linear-gradient(160deg, #0d0620 0%, #1a0a2e 40%, #2d1b4e 70%, #1a0a2e 100%);
+      background-attachment: fixed;
+      font-family: 'Lato', sans-serif;
+      color: #fff;
+      padding-bottom: 90px;
+    }
+
+    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.15; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.6); }
+    }
+
+    .heart-float {
+      position: fixed;
+      bottom: -60px;
+      font-size: 1.4rem;
+      animation: floatUp var(--dur) linear infinite;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0); opacity: 0; }
+      10%  { opacity: 0.55; }
+      90%  { opacity: 0.25; }
+      100% { transform: translateY(-110vh) rotate(15deg); opacity: 0; }
+    }
+
+    /* ── header ── */
+    .hero {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 72px 24px 52px;
+    }
+    .hero .crown {
+      font-size: 3.2rem;
+      display: block;
+      margin-bottom: 14px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .hero h1 em { color: #f9a8d4; font-style: italic; }
+    .hero p {
+      color: rgba(255,255,255,0.55);
+      font-size: clamp(0.9rem, 4vw, 1.05rem);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── línea del tiempo ── */
+    .timeline {
+      position: relative;
+      z-index: 10;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #9333ea 8%, #ec4899 50%, #9333ea 92%, transparent);
+      transform: translateX(-50%);
+    }
+
+    /* ── ítem ── */
+    .item {
+      position: relative;
+      width: 47%;
+      margin-bottom: 56px;
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .item.visible { opacity: 1; transform: translateY(0); }
+
+    .item:nth-child(odd)  { margin-left: 0;   text-align: right; }
+    .item:nth-child(even) { margin-left: 53%; text-align: left;  }
+
+    .item::after {
+      content: '';
+      position: absolute;
+      top: 24px;
+      width: 14px; height: 14px;
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+      border-radius: 50%;
+      border: 3px solid #1a0a2e;
+      box-shadow: 0 0 14px rgba(236,72,153,0.75);
+    }
+    .item:nth-child(odd)::after  { right: -33px; }
+    .item:nth-child(even)::after { left:  -33px; }
+
+    /* tarjeta */
+    .card {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 20px 52px rgba(0,0,0,0.45); }
+
+    /* foto */
+    .card-photo {
+      width: 100%;
+      height: 260px;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      background: rgba(0,0,0,0.35);
+    }
+    .card-photo.hidden { display: none; }
+
+    .card-body { padding: 20px 20px 16px; }
+
+    .card .emoji {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .card .date-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #be185d, #9333ea);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 13px;
+      border-radius: 999px;
+      margin-bottom: 9px;
+    }
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 4vw, 1.15rem);
+      color: #fff;
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+    .card p {
+      color: rgba(255,255,255,0.62);
+      font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+      line-height: 1.68;
+    }
+    .card p strong { color: #f9a8d4; font-weight: 400; font-style: italic; }
+
+    /* ── QR section ── */
+    .qr-section {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 60px auto 0;
+      padding: 0 20px;
+      max-width: 400px;
+      text-align: center;
+    }
+    .qr-wrap {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 28px;
+      padding: 36px 36px 28px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+      animation: glow 3s ease-in-out infinite;
+    }
+    @keyframes glow {
+      0%,100% { box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 0 rgba(236,72,153,0); }
+      50%      { box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 40px rgba(236,72,153,0.3); }
+    }
+    .qr-hint {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      display: block;
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .qr-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 5vw, 1.4rem);
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .qr-sub {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.82rem;
+      margin-bottom: 22px;
+      letter-spacing: 0.03em;
+    }
+    #qrcode {
+      display: inline-block;
+      padding: 12px;
+      background: #fff;
+      border-radius: 14px;
+    }
+    #qrcode canvas, #qrcode img { border-radius: 8px; display: block; }
+
+    /* ── responsive ── */
+    @media (max-width: 560px) {
+      .timeline::before { left: 20px; }
+      .item,
+      .item:nth-child(odd),
+      .item:nth-child(even) {
+        width: 100%;
+        margin-left: 44px;
+        text-align: left;
+      }
+      .item::after,
+      .item:nth-child(odd)::after,
+      .item:nth-child(even)::after {
+        left: -33px;
+        right: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+<script>
+  if (localStorage.getItem('wau_auth') !== 'ok') {
+    window.location.replace('index.html?next=nosotros.html');
+  }
+</script>
+
+<div id="stars"></div>
+<div id="hearts"></div>
+
+<header class="hero">
+  <span class="crown">💜</span>
+  <h1>Nuestra <em>historia</em></h1>
+</header>
+
+<div class="timeline">
+
+  <!-- Momento 1 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/Wau1.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">👀</span>
+        <span class="date-badge">El principio</span>
+        <h2>La primera vez que te vi</h2>
+        <p>No sabía que ese momento iba a cambiarlo todo. Pero algo en mí ya lo sabía.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 2 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/IMG_0974.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">💬</span>
+        <span class="date-badge">Poco después</span>
+        <h2>Nuestras primeras conversaciones</h2>
+        <p>Podíamos hablar de todo y de nada. De repente ya no quería hablar con nadie más.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 3 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/IMG_0981.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">🦋</span>
+        <span class="date-badge">Un día especial</span>
+        <h2>La primera vez que salimos</h2>
+        <p>Los nervios, la sonrisa que no me podía quitar. <strong>Ese día me enamoré.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 4 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/IMG_1012.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">🌙</span>
+        <span class="date-badge">De noche</span>
+        <h2>Cuando te quedas a mimir</h2>
+        <p>Es de mis momentos favoritos. Juntos, viendo Star Wars</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 5 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/IMG_1084.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">🌹</span>
+        <span class="date-badge">Cuando todo cambió</span>
+        <h2>El momento en que supe</h2>
+        <p>Que quería que fueras mía. Y que iba a hacer todo lo posible para que así fuera.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 6 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/IMG_1200.jpg" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="emoji">☀️</span>
+        <span class="date-badge">Cada mañana</span>
+        <h2>Buenos días, Wuaucini</h2>
+        <p>Empezar el día sabiendo que estás en mi vida.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Momento 7 -->
+  <div class="item">
+    <div class="card">
+      <img class="card-photo" src="fotos/a42684cd-1098-4c63-b840-ad9161ac943c.JPG" alt="" onerror="this.classList.add('hidden')">
+      <div class="card-body">
+        <span class="date-badge">Siempre</span>
+        <h2>31 de Mayo del 2026</h2>
+        <p>Tú, yo, y por siempre bebe mosho. <strong>Te amo, mi niña.</strong></p>
+      </div>
+    </div>
+  </div>
+
+<!-- QR al final -->
+<div class="qr-section">
+  <div class="qr-wrap">
+    <span class="qr-hint">📱</span>
+    <h2 class="qr-title">Escanéame</h2>
+    <p class="qr-sub">Hay algo especial esperándote</p>
+    <div id="qrcode"></div>
+  </div>
+</div>
+
+<!-- qrcode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  /* ── estrellas ── */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 150; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = 1 + Math.random() * 2.2;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*5}s;animation-delay:${Math.random()*6}s;`;
+    starsEl.appendChild(s);
+  }
+
+  /* ── corazones ── */
+  const heartsEl = document.getElementById('hearts');
+  ['❤️','🩷','💜','✨','💕','🌸','🤍'].forEach(e => {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = e;
+    h.style.cssText = `left:${Math.random()*100}%;--dur:${8+Math.random()*9}s;animation-delay:${Math.random()*12}s;`;
+    heartsEl.appendChild(h);
+  });
+
+  /* ── scroll reveal ── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.item').forEach(el => observer.observe(el));
+
+  /* ── QR code ── */
+  const QR_URL = 'https://almanzaalejandro.github.io/wuaucini-domingo/novia.html';
+  new QRCode(document.getElementById('qrcode'), {
+    text: QR_URL,
+    width: 200,
+    height: 200,
+    colorDark: '#2d1b4e',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>
